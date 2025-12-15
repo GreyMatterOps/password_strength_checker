@@ -354,9 +354,9 @@ class PasswordCheckerFrame(wx.Frame):
             # Entropy from YOUR backend
             entropy = result['entropy']
             entropy_text = f"{entropy:.2f} bits"
-            if entropy > 60:
+            if entropy > 52:
                 entropy_text += " (Excellent)"
-            elif entropy > 40:
+            elif entropy > 29:
                 entropy_text += " (Good)"
             else:
                 entropy_text += " (Weak)"
@@ -417,7 +417,7 @@ class PasswordCheckerFrame(wx.Frame):
             recommendations.append("Include special characters (!@#$%^&*)")
         
         # Entropy recommendations
-        if result['entropy'] < 40:
+        if result['entropy'] < 29:
             recommendations.append("Increase complexity - use a mix of different character types")
         
         # Common password warning

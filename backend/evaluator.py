@@ -55,9 +55,9 @@ def evaluate_password(password:str) -> dict:
         score += 15
 
     # Entropy score
-    if entropy_value > 45:
+    if entropy_value > 60:
         score += 20
-    elif entropy_value > 25:
+    elif entropy_value > 40:
         score += 10
     else:
         score += 5
