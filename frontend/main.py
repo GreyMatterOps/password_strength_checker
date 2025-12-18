@@ -446,20 +446,50 @@ class PasswordCheckerFrame(wx.Frame):
     
     def toggle_password_visibility(self, event):
         """Toggle password visibility"""
+        password = self.password_input.GetValue()
+        pos = self.password_input.GetInsertionPoint()
+        
         if self.show_password_btn.GetValue():
-            # Show password
-            current_style = self.password_input.GetWindowStyle()
-            self.password_input.SetWindowStyle(current_style & ~wx.TE_PASSWORD)
+            # Show password - recreate without TE_PASSWORD
+            self.password_input.Destroy()
+            self.password_input = wx.TextCtrl(
+                self.password_input.GetParent(),
+                value=password,
+                size=(450, 35)
+            )
+            self.password_input.SetBackgroundColour(wx.Colour(20, 20, 20))
+            self.password_input.SetForegroundColour(wx.Colour(0, 255, 0))
+            self.password_input.Bind(wx.EVT_TEXT, self.on_password_change)
             self.show_password_btn.SetLabel('👁️ Hide')
         else:
-            # Hide password
-            current_style = self.password_input.GetWindowStyle()
-            self.password_input.SetWindowStyle(current_style | wx.TE_PASSWORD)
+            # Hide password - recreate with TE_PASSWORD
+            self.password_input.Destroy()
+            self.password_input = wx.TextCtrl(
+                self.password_input.GetParent(),
+                value=password,
+                style=wx.TE_PASSWORD,
+                size=(450, 35)
+            )
+            self.password_input.SetBackgroundColour(wx.Colour(20, 20, 20))
+            self.password_input.SetForegroundColour(wx.Colour(0, 255, 0))
+            self.password_input.Bind(wx.EVT_TEXT, self.on_password_change)
             self.show_password_btn.SetLabel('👁️ Show')
         
-        # Refresh to apply style change
-        password = self.password_input.GetValue()
-        self.password_input.ChangeValue(password)
+        # Re-insert into sizer
+        parent_sizer = self.password_input.GetParent().GetSizer()
+        for sizer_item in parent_sizer.GetChildren():
+            if isinstance(sizer_item.GetSizer(), wx.StaticBoxSizer):
+                box_sizer = sizer_item.GetSizer()
+                for child in box_sizer.GetChildren():
+                    if isinstance(child.GetSizer(), wx.BoxSizer):
+                        password_sizer = child.GetSizer()
+                        password_sizer.Insert(0, self.password_input, 1, wx.ALL | wx.EXPAND, 5)
+                        break
+                break
+        
+        self.password_input.SetInsertionPoint(pos)
+        self.password_input.SetFocus()
+        self.Layout()
 
 
 class PasswordCheckerApp(wx.App):
